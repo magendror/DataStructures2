@@ -6,15 +6,15 @@
 
 class SalesNode{
   public:
-  CarModel* key;
+  CarType* key;
   SalesNode*left;
   SalesNode*right;
   int height;
-  SalesNode(CarModel* key);
+  SalesNode(CarType* key);
   ~SalesNode()=default;
 };
 
-SalesNode::SalesNode(CarModel* key):key(key),left(NULL),right(NULL),height(1){}
+SalesNode::SalesNode(CarType* key):key(key),left(NULL),right(NULL),height(1){}
 
 int height(SalesNode* N) {
   if (N == NULL){
@@ -23,7 +23,7 @@ int height(SalesNode* N) {
   return N->height;
 }
 
-SalesNode* newSalesNode(CarModel* key) {
+SalesNode* newSalesNode(CarType* key) {
   SalesNode* node= new SalesNode(key);
   return (node);
 }
@@ -55,7 +55,7 @@ int getBalanceFactor(SalesNode* N) {
   return height(N->left) - height(N->right);
 }
 
-SalesNode* findSalesNode(SalesNode *node, CarModel* key){
+SalesNode* findSalesNode(SalesNode *node, CarType* key){
   if(node==NULL){
     return node;
   }
@@ -71,7 +71,7 @@ SalesNode* findSalesNode(SalesNode *node, CarModel* key){
   }
 }
 
-SalesNode* insertSalesNode(SalesNode* node, CarModel* key) {
+SalesNode* insertSalesNode(SalesNode* node, CarType* key) {
   //find position and insert recursively
   if (node== NULL){
     return (newSalesNode(key));
@@ -136,10 +136,10 @@ SalesNode *findSalesNodeBySales(SalesNode *node, int sales, int modelid, int typ
   if(node==NULL){
     return node;
   }
-  if (node->key->num_of_sales > sales){
+  if (node->key->sales > sales){
     return (findSalesNodeBySales(node->left, sales,modelid, type_id));
   }
-  else if (node->key->num_of_sales < sales)
+  else if (node->key->sales < sales)
   {
     return (findSalesNodeBySales(node->right, sales,modelid, type_id));
   }
@@ -151,19 +151,12 @@ SalesNode *findSalesNodeBySales(SalesNode *node, int sales, int modelid, int typ
       return (findSalesNodeBySales(node->left, sales,modelid, type_id));
     }
     else{
-      if(node->key->model_id > modelid){
-        return (findSalesNodeBySales(node->right, sales,modelid, type_id));
-      }
-      else if(node->key->model_id < modelid){
-        return (findSalesNodeBySales(node->left, sales,modelid, type_id));
-      }
-      else
-        return node;
+      return node;
     }
   }
 }
 
-SalesNode* deleteSalesNode(SalesNode*root, CarModel* key) {
+SalesNode* deleteSalesNode(SalesNode*root, CarType* key) {
   if (root == NULL)
     return root;
   if (*(root->key) > *(key))
