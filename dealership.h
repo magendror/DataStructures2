@@ -8,7 +8,7 @@
 class Dealership
 {
 public:
-    Agency* agencies;
+    Agency** agencies;
     int num_of_agencies;
     Dealership();
     ~Dealership();

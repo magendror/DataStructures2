@@ -15,7 +15,6 @@ public:
     TypeNode* type_tree;
     Agency(int num_of_agency, Agency* father=NULL,SalesNode* sales_key=NULL, TypeNode* type_tree=NULL);
     ~Agency()=default;
-    bool operator>(CarType &model2);
 };
 
 Agency::Agency(int num_of_agency, Agency* father,SalesNode* sales_key, TypeNode* type_tree):
