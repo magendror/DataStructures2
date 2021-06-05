@@ -10,6 +10,7 @@
 class Agency{
 public:
     int num_of_agency;
+    int num_of_cars;
     Agency* father;
     SalesNode* sales_key;
     TypeNode* type_tree;
@@ -18,7 +19,7 @@ public:
 };
 
 Agency::Agency(int num_of_agency, Agency* father,SalesNode* sales_key, TypeNode* type_tree):
-        num_of_agency(num_of_agency),father(father),sales_key(sales_key),type_tree(type_tree)
+        num_of_agency(num_of_agency),num_of_cars(0),father(father),sales_key(sales_key),type_tree(type_tree)
 {
 }
 
