@@ -169,8 +169,9 @@ SalesNode *findSalesNodeBySales(SalesNode *node, int sales, int modelid, int typ
 }
 
 SalesNode* deleteSalesNode(SalesNode*root, CarType* key) {
-  if (root == NULL)
+  if (root == NULL){
     return root;
+  }
   if (*(root->key) > *(key))
     root->left = deleteSalesNode(root->left, key);
   else if (*(key) > *(root->key))
@@ -193,10 +194,12 @@ SalesNode* deleteSalesNode(SalesNode*root, CarType* key) {
       root->right = deleteSalesNode(root->right,temp->key);
     }
   }
-  if (root == NULL)
+  if (root == NULL){
     return root;
+  }
   // balance the tree
   root->height = max_int(height(root->left),height(root->right)) + 1;
+  root->w=putW(root);
   int balanceFactor = getBalanceFactor(root);
   if (balanceFactor > 1) {
     if (getBalanceFactor(root->left) >= 0) {
