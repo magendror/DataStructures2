@@ -16,10 +16,19 @@ static void clearTypeTree(TypeNode* current){
     }
     clearTypeTree(current->left);
     clearTypeTree(current->right);
-    delete current->key;
     delete current;
 }
-static void mergeArry(CarType** temp1,int size1,CarType** temp2,int size2,CarType** temp3){
+
+static void clearSalesTree(SalesNode* current){
+    if (current==NULL){
+        return;
+    }
+    clearSalesTree(current->left);
+    clearSalesTree(current->right);
+    delete current;
+}
+
+static void mergeArrey(CarType** temp1,int size1,CarType** temp2,int size2,CarType** temp3){
     int i1=0,i2=0,i3=0;
     while(i1<size1&&i2<size2){
         if(*(temp2[i2])>*(temp1[i1])){
@@ -45,15 +54,6 @@ static void mergeArry(CarType** temp1,int size1,CarType** temp2,int size2,CarTyp
     }
 }
 
-static void clearSalesTree(SalesNode* current){
-    if (current==NULL){
-        return;
-    }
-    clearSalesTree(current->left);
-    clearSalesTree(current->right);
-    delete current->key;
-    delete current;
-}
 static void writeSalesTree(SalesNode* tree1, CarType** temp1,int* index){
     if(tree1==NULL){
         return;
@@ -74,6 +74,26 @@ static void writeTypeTree(TypeNode* tree1, CarType** temp1,int* index){
     writeTypeTree(tree1->right,temp1,index);
 }
 
+static SalesNode* createMergedSalesTree(CarType** temp3, int start, int end){
+    if (start > end)
+    return NULL;
+    int middle = (start + end)/2;
+    SalesNode* node = new SalesNode(temp3[middle]);
+    node->left=createMergedSalesTree(temp3,start,middle-1);
+    node->right=createMergedSalesTree(temp3,middle+1,end);
+    return node;
+}
+
+static TypeNode* createMergedTypeTree(CarType** temp3, int start, int end){
+    if (start > end)
+    return NULL;
+    int middle = (start + end)/2;
+    TypeNode* node = new TypeNode(temp3[middle]);
+    node->left=createMergedTypeTree(temp3,start,middle-1);
+    node->right=createMergedTypeTree(temp3,middle+1,end);
+    return node;
+}
+
 static SalesNode* mergeSalesTrees(SalesNode* tree1,int size1,SalesNode* tree2,int size2){
     CarType** temp1 = new CarType*[size1];
     CarType** temp2 = new CarType*[size2];
@@ -83,9 +103,14 @@ static SalesNode* mergeSalesTrees(SalesNode* tree1,int size1,SalesNode* tree2,in
     index=0;
     writeSalesTree(tree1,temp1,&index);
     mergeArrey(temp1,size1,temp2,size2,temp3);
+    delete[] temp1;
+    delete[] temp2;
+    SalesNode* new_tree = createMergedSalesTree(temp3,0,size1+size2-1);
+    delete[] temp3;
+    return new_tree;
 }
 
-static SalesNode* mergeTypeTrees(TypeNode* tree1,int size1,TypeNode* tree2,int size2){
+static TypeNode* mergeTypeTrees(TypeNode* tree1,int size1,TypeNode* tree2,int size2){
     CarType** temp1 = new CarType*[size1];
     CarType** temp2 = new CarType*[size2];
     CarType** temp3 = new CarType*[size1+size2];
@@ -94,6 +119,11 @@ static SalesNode* mergeTypeTrees(TypeNode* tree1,int size1,TypeNode* tree2,int s
     index=0;
     writeTypeTree(tree1,temp1,&index);
     mergeArrey(temp1,size1,temp2,size2,temp3);
+    delete[] temp1;
+    delete[] temp2;
+    TypeNode* new_tree = createMergedTypeTree(temp3,0,size1+size2-1);
+    delete[] temp3;
+    return new_tree;
 }
 ////////////////////////End of Static Functions//////////////////////////////////////
 
@@ -134,14 +164,27 @@ StatusType UniteAgencies(void *DS, int agencyID1, int agencyID2){
     }
     Agency* root1= getRoot(DS_convert->agencies[agencyID1]);
     Agency* root2= getRoot(DS_convert->agencies[agencyID2]);
+    SalesNode* sales_temp=mergeSalesTrees(root1->sales_tree,root1->num_of_cars,root2->sales_tree,root2->num_of_cars);
+    TypeNode* type_temp=mergeTypeTrees(root1->type_tree,root1->num_of_cars,root2->type_tree,root2->num_of_cars);
+    clearSalesTree(root1->sales_tree);
+    clearSalesTree(root2->sales_tree);
+    clearTypeTree(root1->type_tree);
+    clearTypeTree(root2->type_tree);
     if(root2->num_of_agency>root1->num_of_agency){
         root1->father=root2;
-        root1->sales_key
-        SalesNode* sales_temp=mergeSalesTrees(root1,root1->);
+        root2->sales_tree=sales_temp;
+        root2->type_tree=type_temp;
+        root2->num_of_agency+=root1->num_of_agency;
+        root2->num_of_cars+=root1->num_of_cars;
     }
     else{
         root2->father=root1;
+        root1->sales_tree=sales_temp;
+        root1->type_tree=type_temp;
+        root1->num_of_agency+=root2->num_of_agency;
+        root1->num_of_cars+=root2->num_of_cars;
     }
+    return SUCCESS;
 }
 
 StatusType GetIthSoldType(void *DS, int agencyID, int i, int* res);
