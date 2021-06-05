@@ -25,9 +25,13 @@ int height(SalesNode* N) {
 }
 
 int putW(SalesNode* node){
-  int w_left = node->left==NULL ? 1 : node->left->w;
-  int w_right = node->right==NULL ? 1 : node->right->w;
+  int w_left = node->left==NULL ? 0 : node->left->w;
+  int w_right = node->right==NULL ? 0 : node->right->w;
   return (1+w_right+w_left);
+}
+
+int getW(SalesNode* node){
+  return node==NULL ? 0 : node->w;
 }
 
 SalesNode* newSalesNode(CarType* key) {
@@ -222,14 +226,14 @@ SalesNode* deleteSalesNode(SalesNode*root, CarType* key) {
   return root;
 }
 SalesNode* Select(SalesNode* root,int k){
-  if(root->left->w==k-1){
+  if(getW(root->left)==k-1){
     return root;
   }
-  if(root->left->w>k-1){
+  if(getW(root->left)>k-1){
     return Select(root->left,k);
   }
   else{
-    return Select(root->right,k-(root->left->w)-1);
+    return Select(root->right,k-getW(root->left)-1);
   }
 }
 #endif

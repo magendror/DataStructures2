@@ -201,13 +201,14 @@ StatusType SellCar(void *DS, int agencyID, int typeID, int k){
     Agency* root=getRoot(DS_convert->agencies[agencyID]);
     TypeNode* car_node = findTypeNode(root->type_tree,typeID);
     if(car_node==NULL){
-        CarType* car_type_node=new CarType(typeID,k,true);
-        CarType* car_sale_node=new CarType(typeID,k,false,car_type_node);
+        CarType* car_sale_node=new CarType(typeID,k,false);
+        CarType* car_type_node=new CarType(typeID,k,true,car_sale_node);
         if(car_sale_node==NULL||car_type_node==NULL){
             return ALLOCATION_ERROR;
         }
         root->type_tree = insertTypeNode(root->type_tree,car_type_node);
         root->sales_tree = insertSalesNode(root->sales_tree,car_sale_node);
+        (root->num_of_cars)++;
     }
     else{
         CarType* sales_new_key=car_node->key->sales_key;
@@ -259,10 +260,10 @@ StatusType GetIthSoldType(void *DS, int agencyID, int i, int* res){
     }
     Dealership* DS_convert = (Dealership*)DS;
     Agency* root=getRoot(DS_convert->agencies[agencyID]);
-    if(agencyID>=DS_convert->num_of_agencies||root->num_of_cars<i){
+    if(agencyID>=DS_convert->num_of_agencies||root->num_of_cars<i+1){
         return FAILURE;
     }
-    *res=Select(root->sales_tree,i)->key->type_id;
+    *res=Select(root->sales_tree,i+1)->key->type_id;
     return SUCCESS;
 }
 
