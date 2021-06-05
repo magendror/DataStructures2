@@ -221,4 +221,15 @@ SalesNode* deleteSalesNode(SalesNode*root, CarType* key) {
   }
   return root;
 }
+SalesNode* select(SalesNode* root,int k){
+  if(root->left->w==k-1){
+    return root;
+  }
+  if(root->left->w>k-1){
+    return select(root->left,k);
+  }
+  else{
+    return select(root->right,k-root->left->w-1);
+  }
+}
 #endif

@@ -9,6 +9,15 @@ static Agency* getRoot(Agency* current){
     return current;
 }
 
+static void shrink(Agency* current){
+    Agency* root =getRoot(current);
+    Agency* temp=NULL;
+    while(current->father!=NULL){
+        temp =current->father;
+        current->father=root;
+        current=temp;
+    }
+}
 
 static void clearTypeTree(TypeNode* current){
     if (current==NULL){
@@ -19,6 +28,17 @@ static void clearTypeTree(TypeNode* current){
     delete current;
 }
 
+// static void deleteTypeTree(TypeNode* current){
+//     if (current==NULL){
+//         return;
+//     }
+//     deleteTypeTree(current->left);
+//     deleteTypeTree(current->right);
+//     delete current->key;
+//     delete current;
+// }
+///not sure if needed because salestree and typetree have the same key
+
 static void clearSalesTree(SalesNode* current){
     if (current==NULL){
         return;
@@ -27,6 +47,18 @@ static void clearSalesTree(SalesNode* current){
     clearSalesTree(current->right);
     delete current;
 }
+
+static void deleteSalesTree(SalesNode* current){
+    if (current==NULL){
+        return;
+    }
+    deleteSalesTree(current->left);
+    deleteSalesTree(current->right);
+    delete current->key->sales_key;
+    delete current->key;
+    delete current;
+}
+
 
 static void mergeArrey(CarType** temp1,int size1,CarType** temp2,int size2,CarType** temp3){
     int i1=0,i2=0,i3=0;
@@ -149,7 +181,37 @@ StatusType AddAgency(void *DS){
     return SUCCESS;
 }
 
-StatusType SellCar(void *DS, int agencyID, int typeID, int k);
+StatusType SellCar(void *DS, int agencyID, int typeID, int k){
+    if(DS==NULL||k<=0||agencyID<0){
+        return INVALID_INPUT;
+    }
+    Dealership* DS_convert = (Dealership*)DS;
+    if(agencyID>=DS_convert->num_of_agencies){
+        return FAILURE;
+    }
+    Agency* root=getRoot(DS_convert->agencies[agencyID]);
+    TypeNode* car_node= findTypeNode(root->type_tree,typeID);
+    if(car_node==NULL){
+        CarType* car_new_node=new CarType(typeID,k);
+        if(car_new_node==NULL){
+            return ALLOCATION_ERROR;
+        }
+        root->type_tree= insertTypeNode(root->type_tree,car_new_node);
+        root->sales_tree=insertSalesNode(root->sales_tree,car_new_node);
+        //// salestree and typetree have the same key ////
+    }
+    else{
+        int newSales=car_node->key->sales_key->sales+k;
+        CarType* sales_new_key=new CarType(car_node->key->sales_key->type_id,newSales);
+        if(sales_new_key==NULL){
+            return ALLOCATION_ERROR;
+        }
+        root->sales_tree=deleteSalesNode(root->sales_tree,car_node->key->sales_key);
+        root->sales_tree=insertSalesNode(root->sales_tree,sales_new_key);
+    }
+    shrink(DS_convert->agencies[agencyID]);
+    return SUCCESS;
+}
 
 StatusType UniteAgencies(void *DS, int agencyID1, int agencyID2){
     if(DS==NULL||agencyID1<0||agencyID2<0){
@@ -187,7 +249,29 @@ StatusType UniteAgencies(void *DS, int agencyID1, int agencyID2){
     return SUCCESS;
 }
 
-StatusType GetIthSoldType(void *DS, int agencyID, int i, int* res);
+StatusType GetIthSoldType(void *DS, int agencyID, int i, int* res){
+    if(DS==NULL||i<0||agencyID<0||res==NULL){
+        return INVALID_INPUT;
+    }
+    Dealership* DS_convert = (Dealership*)DS;
+    Agency* root=getRoot(DS_convert->agencies[agencyID]);
+    if(agencyID>=DS_convert->num_of_agencies||root->num_of_cars<i){
+        return FAILURE;
+    }
+    *res=select(root->sales_tree,i)->key->type_id;
+    return SUCCESS;
+}
 
-void Quit(void** DS);
+void Quit(void** DS){
+    Dealership* DS_convert = (Dealership*)*DS;
+    for(int i=0; i<DS_convert->num_of_agencies; i++){
+        Agency* root= getRoot(DS_convert->agencies[i]);
+        deleteSalesTree(root->sales_tree);
+        clearTypeTree(root->type_tree);
+        delete DS_convert->agencies[i];
+    }
+    delete[] DS_convert->agencies;
+    delete DS_convert;
+
+}
 //End of Main Functions//
