@@ -10,11 +10,12 @@ class SalesNode{
   SalesNode*left;
   SalesNode*right;
   int height;
+  int w;
   SalesNode(CarType* key);
   ~SalesNode()=default;
 };
 
-SalesNode::SalesNode(CarType* key):key(key),left(NULL),right(NULL),height(1){}
+SalesNode::SalesNode(CarType* key):key(key),left(NULL),right(NULL),height(1),w(1){}
 
 int height(SalesNode* N) {
   if (N == NULL){
@@ -34,18 +35,22 @@ SalesNode* rightRotate(SalesNode* n) {
   temp_left->right = n;
   n->left = temp_right;
   n->height = max_int(height(n->left),height(n->right)) + 1;
+  n->w=putW(n);
   temp_left->height = max_int(height(temp_left->left),height(temp_left->right)) + 1;
+  temp_left->w=putW(temp_left);
   return temp_left;
 }
 
 SalesNode* leftRotate(SalesNode* x) {
-  SalesNode* temp_left = x->right;
-  SalesNode* temp_right = temp_left->left;
-  temp_left->left = x;
-  x->right = temp_right;
+  SalesNode* temp_right = x->right;
+  SalesNode* temp_left = temp_right->left;
+  temp_right->left = x;
+  x->right = temp_left;
   x->height = max_int(height(x->left),height(x->right)) + 1;
-  temp_left->height = max_int(height(temp_left->left),height(temp_left->right)) + 1;
-  return temp_left;
+  x->w=putW(x);
+  temp_right->height = max_int(height(temp_right->left),height(temp_right->right)) + 1;
+  temp_right->w=putW(temp_right);
+  return temp_right;
 }
 
 int getBalanceFactor(SalesNode* N) {
@@ -53,6 +58,12 @@ int getBalanceFactor(SalesNode* N) {
     return 0;
   }
   return height(N->left) - height(N->right);
+}
+
+int putW(SalesNode* node){
+  int w_left = node->left==NULL ? 1 : node->left->w;
+  int w_right = node->right==NULL ? 1 : node->right->w;
+  return (1+w_right+w_left);
 }
 
 SalesNode* findSalesNode(SalesNode *node, CarType* key){
@@ -87,6 +98,7 @@ SalesNode* insertSalesNode(SalesNode* node, CarType* key) {
   }
   // balance the tree
   node->height = max_int(height(node->left),height(node->right)) + 1;
+  node->w=putW(node);
   int balanceFactor = getBalanceFactor(node);
   if (balanceFactor > 1) {
     if (getBalanceFactor(node->left) >=0) {
