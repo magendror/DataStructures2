@@ -24,6 +24,12 @@ int height(SalesNode* N) {
   return N->height;
 }
 
+int putW(SalesNode* node){
+  int w_left = node->left==NULL ? 1 : node->left->w;
+  int w_right = node->right==NULL ? 1 : node->right->w;
+  return (1+w_right+w_left);
+}
+
 SalesNode* newSalesNode(CarType* key) {
   SalesNode* node= new SalesNode(key);
   return (node);
@@ -58,12 +64,6 @@ int getBalanceFactor(SalesNode* N) {
     return 0;
   }
   return height(N->left) - height(N->right);
-}
-
-int putW(SalesNode* node){
-  int w_left = node->left==NULL ? 1 : node->left->w;
-  int w_right = node->right==NULL ? 1 : node->right->w;
-  return (1+w_right+w_left);
 }
 
 SalesNode* findSalesNode(SalesNode *node, CarType* key){

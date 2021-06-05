@@ -18,14 +18,14 @@ public:
     bool operator>(CarType &model2);
 };
 
-CarType::CarType(int type_id, int sales=0,bool in_type_tree, CarType* sales_key) : 
+CarType::CarType(int type_id, int sales,bool in_type_tree, CarType* sales_key) : 
                         type_id(type_id),sales(sales),in_type_tree(in_type_tree),sales_key(sales_key)
 {}
 
 
 bool CarType::operator>(CarType &type2)
 {
-    if(in_type_tree=true){
+    if(in_type_tree==true){
         if (type_id > type2.type_id){
             return true;
         }
