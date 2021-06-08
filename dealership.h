@@ -10,11 +10,12 @@ class Dealership
 public:
     Agency** agencies;
     int num_of_agencies;
+    int array_size;
     Dealership();
     ~Dealership();
 };
 
-Dealership::Dealership() : agencies(NULL),num_of_agencies(0)
+Dealership::Dealership() : agencies(new Agency*[1]),num_of_agencies(0), array_size(1)
 {
 }
 

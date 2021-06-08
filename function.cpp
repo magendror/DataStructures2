@@ -179,13 +179,16 @@ StatusType AddAgency(void *DS){
         return INVALID_INPUT;
     }
     Dealership* DS_convert = (Dealership*)DS;
-    Agency** temp = new Agency*[DS_convert->num_of_agencies+1];
-    for(int i=0;i<DS_convert->num_of_agencies;i++){
-        temp[i]=DS_convert->agencies[i];
+    if(DS_convert->num_of_agencies+1>=DS_convert->array_size){
+        Agency** temp = new Agency*[2*(DS_convert->array_size)];
+        (DS_convert->array_size)*=2;
+        for(int i=0;i<DS_convert->num_of_agencies;i++){
+            temp[i]=DS_convert->agencies[i];
+        }
+        delete[] DS_convert->agencies;
+        DS_convert->agencies = temp;
     }
-    temp[DS_convert->num_of_agencies]=new Agency(DS_convert->num_of_agencies);
-    delete[] DS_convert->agencies;
-    DS_convert->agencies = temp;
+    DS_convert->agencies[DS_convert->num_of_agencies]=new Agency(DS_convert->num_of_agencies);
     DS_convert->num_of_agencies++;
     return SUCCESS;
 }
