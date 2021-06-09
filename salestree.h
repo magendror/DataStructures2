@@ -226,6 +226,9 @@ SalesNode* deleteSalesNode(SalesNode*root, CarType* key) {
   return root;
 }
 SalesNode* Select(SalesNode* root,int k){
+  if(root->left==NULL&&root->right==NULL){
+    return root;
+  }
   if(getW(root->left)==k-1){
     return root;
   }

@@ -2,6 +2,17 @@
 #include "dealership.h"
 
 ////////////////////////Insert Static Functions Here//////////////////////////////////
+static void updateHightandW(SalesNode* new_tree){
+    if(new_tree==NULL){
+        return;
+    }
+    updateHightandW(new_tree->left);
+    updateHightandW(new_tree->right);
+    new_tree->w=getW(new_tree->right)+getW(new_tree->left)+1;
+    new_tree->height=max_int(height(new_tree->right),height(new_tree->left))+1;
+}
+
+
 static Agency* getRoot(Agency* current){
     while(current->father!=NULL){
         current=current->father;
@@ -137,6 +148,7 @@ static SalesNode* mergeSalesTrees(SalesNode* tree1,int size1,SalesNode* tree2,in
     delete[] temp2;
     SalesNode* new_tree = createMergedSalesTree(temp3,0,size1+size2-1);
     delete[] temp3;
+    updateHightandW(new_tree);
     return new_tree;
 }
 
@@ -237,6 +249,9 @@ StatusType UniteAgencies(void *DS, int agencyID1, int agencyID2){
     }
     Agency* root1= getRoot(DS_convert->agencies[agencyID1]);
     Agency* root2= getRoot(DS_convert->agencies[agencyID2]);
+    if (root1==root2){
+        return SUCCESS;
+    }
     SalesNode* sales_temp=mergeSalesTrees(root1->sales_tree,root1->num_of_cars,root2->sales_tree,root2->num_of_cars);
     TypeNode* type_temp=mergeTypeTrees(root1->type_tree,root1->num_of_cars,root2->type_tree,root2->num_of_cars);
     clearTrees(root1,root2);
