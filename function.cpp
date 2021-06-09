@@ -262,6 +262,9 @@ StatusType GetIthSoldType(void *DS, int agencyID, int i, int* res){
         return INVALID_INPUT;
     }
     Dealership* DS_convert = (Dealership*)DS;
+    if(agencyID>=DS_convert->num_of_agencies){
+        return FAILURE;
+    }
     Agency* root=getRoot(DS_convert->agencies[agencyID]);
     if(agencyID>=DS_convert->num_of_agencies||root->num_of_cars<i+1){
         return FAILURE;
